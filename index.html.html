@@ -55,6 +55,14 @@
         </div>
     </div>
 
+    <div class="flex items-center justify-center space-x-4 mb-6 bg-gray-50 p-4 rounded-lg border">
+        <label for="aplicarMulta" class="block text-sm font-medium text-gray-900">Aplicar multa rescisória de 10%?</label>
+        <select id="aplicarMulta" class="w-auto px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500">
+            <option value="nao" selected>Não</option>
+            <option value="sim">Sim</option>
+        </select>
+    </div>
+
     <button onclick="calcularDistrato()" class="w-full bg-red-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-red-700 transition duration-300 text-lg">Calcular</button>
 
     <div id="resultado" class="mt-8"></div>
@@ -83,6 +91,7 @@
         const ultimoDiaStr = document.getElementById('ultimoDia').value;
         const feesPagos = parseInt(document.getElementById('feesPagos').value);
         const avisoPrevioDias = parseInt(document.getElementById('avisoPrevio').value);
+        const aplicarMulta = document.getElementById('aplicarMulta').value;
 
         const resultadoDiv = document.getElementById('resultado');
         const vigenciasDiv = document.getElementById('vigenciasResultado');
@@ -132,6 +141,16 @@
         const feesEmAtraso = Math.max(0, feesDevidos - feesPagos);
         const valorFeesEmAtraso = feesEmAtraso * fee;
 
+        // Cálculo da multa rescisória (condicional)
+        let multa = 0;
+        let multaHtml = '';
+        if (aplicarMulta === 'sim') {
+            const mesesRestantes = numVigencias - (vigenciaAtualIndex + 1);
+            const valorRestanteContrato = mesesRestantes * fee;
+            multa = valorRestanteContrato * 0.10;
+            multaHtml = `<div class="flex justify-between"><span>Multa Rescisória (10% de ${formatarMoeda(valorRestanteContrato)}):</span> <span class="font-semibold">${formatarMoeda(multa)}</span></div>`;
+        }
+
         // Cálculo do aviso prévio
         let valorAvisoPrevio = 0;
         if (avisoPrevioDias === 30) {
@@ -140,8 +159,8 @@
             valorAvisoPrevio = fee * 2;
         }
 
-        // Cálculo do total a ser pago (sem multa)
-        const totalAPagar = valorProporcional + valorFeesEmAtraso + valorAvisoPrevio;
+        // Cálculo do total a ser pago
+        const totalAPagar = valorProporcional + valorFeesEmAtraso + multa + valorAvisoPrevio;
 
         // Exibição do resultado detalhado
         resultadoDiv.innerHTML = `
@@ -150,6 +169,7 @@
                 <div class="space-y-3 text-gray-700">
                     <div class="flex justify-between"><span>Valor Proporcional (${diasTrabalhados} de ${diasNoMes} dias):</span> <span class="font-semibold">${formatarMoeda(valorProporcional)}</span></div>
                     <div class="flex justify-between"><span>Fees em Atraso (${feesEmAtraso} meses):</span> <span class="font-semibold">${formatarMoeda(valorFeesEmAtraso)}</span></div>
+                    ${multaHtml}
                     <div class="flex justify-between"><span>Aviso Prévio (${avisoPrevioDias} dias):</span> <span class="font-semibold">${formatarMoeda(valorAvisoPrevio)}</span></div>
                 </div>
                 <hr class="my-4">
