@@ -132,11 +132,6 @@
         const feesEmAtraso = Math.max(0, feesDevidos - feesPagos);
         const valorFeesEmAtraso = feesEmAtraso * fee;
 
-        // Cálculo da multa rescisória (10% sobre o valor restante)
-        const mesesRestantes = numVigencias - (vigenciaAtualIndex + 1);
-        const valorRestanteContrato = mesesRestantes * fee;
-        const multa = valorRestanteContrato * 0.10;
-
         // Cálculo do aviso prévio
         let valorAvisoPrevio = 0;
         if (avisoPrevioDias === 30) {
@@ -145,8 +140,8 @@
             valorAvisoPrevio = fee * 2;
         }
 
-        // Cálculo do total a ser pago
-        const totalAPagar = valorProporcional + valorFeesEmAtraso + multa + valorAvisoPrevio;
+        // Cálculo do total a ser pago (sem multa)
+        const totalAPagar = valorProporcional + valorFeesEmAtraso + valorAvisoPrevio;
 
         // Exibição do resultado detalhado
         resultadoDiv.innerHTML = `
@@ -155,7 +150,6 @@
                 <div class="space-y-3 text-gray-700">
                     <div class="flex justify-between"><span>Valor Proporcional (${diasTrabalhados} de ${diasNoMes} dias):</span> <span class="font-semibold">${formatarMoeda(valorProporcional)}</span></div>
                     <div class="flex justify-between"><span>Fees em Atraso (${feesEmAtraso} meses):</span> <span class="font-semibold">${formatarMoeda(valorFeesEmAtraso)}</span></div>
-                    <div class="flex justify-between"><span>Multa Rescisória (10% de ${formatarMoeda(valorRestanteContrato)}):</span> <span class="font-semibold">${formatarMoeda(multa)}</span></div>
                     <div class="flex justify-between"><span>Aviso Prévio (${avisoPrevioDias} dias):</span> <span class="font-semibold">${formatarMoeda(valorAvisoPrevio)}</span></div>
                 </div>
                 <hr class="my-4">
